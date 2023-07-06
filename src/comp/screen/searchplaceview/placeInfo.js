@@ -1190,17 +1190,27 @@ const PlaceInfoView = (props) => {
 		);
 	};
 
-	const [messages, setMessages] = useState([]);
+	const [messages, setMessages] = useState({});
+
+	const getMessagesByKey = key => {
+		return messages[key] || [];
+	};
 
 	const handleFormSubmit = (event) => {
 		event.preventDefault();
 		const userInput = event.target.message.value;
 
-		setMessages((prevMessages) => [...prevMessages, { text: userInput, sender: 'user' }]);
+		setMessages((prevMessages) => ({
+			...prevMessages,
+			[placeItem?.name]: [...(prevMessages[placeItem?.name] || []), { text: userInput, sender: 'user' }]
+		}));
 
 		const aiResponse = getAIResponse(userInput);
 
-		setMessages((prevMessages) => [...prevMessages, { text: aiResponse, sender: 'AI' }]);
+		setMessages((prevMessages) => ({
+			...prevMessages,
+			[placeItem?.name]: [...(prevMessages[placeItem?.name] || []), { text: aiResponse, sender: 'AI' }]
+		}));
 
 		event.target.message.value = '';
 	};
@@ -1245,7 +1255,7 @@ const PlaceInfoView = (props) => {
 								<AccordionPanel>
 									<div className="chat-container">
 										<div className="chat-messages">
-											{messages.map((message, index) => (
+											{getMessagesByKey(placeItem?.name).map((message, index) => (
 											<p key={index} className={`message ${message.sender}`}>
 												{message.text}
 											</p>
