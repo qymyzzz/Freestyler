@@ -34,7 +34,7 @@ import lodash from "lodash";
 import Clock from "react-live-clock";
 import { connect } from "react-redux";
 import tzlookup from "tz-lookup";
-import "./placeinfo.css";
+import "./placeInfo.css";
 
 import {
 	degToDMM,

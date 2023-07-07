@@ -1,87 +1,87 @@
 /* AccordionPanel */
 .AccordionPanel {
-  margin-bottom: 16px;
+margin-bottom: 16px;
 }
 
 /* Chat Container */
 .chat-container {
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 16px;
+border: 1px solid #ccc;
+border-radius: 4px;
+padding: 16px;
 }
 
 /* Chat Messages */
 .chat-messages {
-  height: 400px;
-  overflow-y: auto;
-  max-width: 600px;
+height: 400px;
+overflow-y: auto;
+max-width: 600px;
 }
 
 /* Individual Message */
 .message {
-  margin-bottom: 16px;
-  padding: 8px;
-  border-radius: 4px;
-  position: relative;
-  color: black;
-  max-width: 300px;
+margin-bottom: 16px;
+padding: 8px;
+border-radius: 4px;
+position: relative;
+color: black;
+max-width: 300px;
 }
 
 .message-content {
-  margin-bottom: 8px;
+margin-bottom: 8px;
 }
 
 .user {
-  background-color: white;
-  align-self: flex-start;
-  float: right;
-  clear: both
+background-color: white;
+align-self: flex-start;
+float: right;
+clear: both
 }
 
 .AI {
-  background-color: #f5f5f5;
-  align-self: flex-end;
-  float: left;
-  clear: both;
+background-color: #f5f5f5;
+align-self: flex-end;
+float: left;
+clear: both;
 }
 
 .user:before {
-  right: auto;
-  left: 10px;
-  border-color: white transparent transparent transparent;
+right: auto;
+left: 10px;
+border-color: white transparent transparent transparent;
 }
 
 .AI:before {
-  right: 10px;
-  left: auto;
-  border-color: #f5f5f5 transparent transparent transparent;
+right: 10px;
+left: auto;
+border-color: #f5f5f5 transparent transparent transparent;
 }
 
 /* Chat Form */
 .chat-form {
-  display: flex;
-  margin-top: 16px;
+display: flex;
+margin-top: 16px;
 }
 
 /* Input Field */
 .chat-form input[type="text"] {
-  flex-grow: 1;
-  padding: 8px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  margin-right: 8px;
+flex-grow: 1;
+padding: 8px;
+border-radius: 4px;
+border: 1px solid #ccc;
+margin-right: 8px;
 }
 
 /* Send Button */
 .chat-form button[type="submit"] {
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
+background-color: #007bff;
+color: #fff;
+border: none;
+padding: 8px 16px;
+border-radius: 4px;
+cursor: pointer;
 }
 
 .chat-form button[type="submit"]:hover {
-  background-color: #0069d9;
+background-color: #0069d9;
 }
