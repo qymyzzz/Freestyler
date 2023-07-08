@@ -205,7 +205,7 @@ const PlaceInfoView = (props) => {
 			if (!lodash.isNil(placeItem)) {
 				getPlaceDetails();
 			} else {
-				await updateState({
+				updateState({
 					placeDetailsObj: null,
 					countryDetailsObj: null,
 					timeZoneArray: [],
@@ -228,7 +228,7 @@ const PlaceInfoView = (props) => {
 				favPlaceDisplayArray.push(currentPlaceItem);
 			});
 
-			await updateState({
+			updateState({
 				favPlaceArray: favPlaceArray,
 				favPlaceDisplayArray: favPlaceDisplayArray,
 			});
@@ -1190,13 +1190,15 @@ const PlaceInfoView = (props) => {
 		);
 	};
 
+	const [messageInput, setMessageInput] = useState('');
+
 	const [messages, setMessages] = useState({});
 
 	const getMessagesByKey = key => {
 		return messages[key] || [];
 	};
 
-	const handleFormSubmit = (event) => {
+	const handleFormSubmit = async (event) => {
 		event.preventDefault();
 		const userInput = event.target.message.value;
 
@@ -1205,7 +1207,7 @@ const PlaceInfoView = (props) => {
 			[placeItem?.name]: [...(prevMessages[placeItem?.name] || []), { text: userInput, sender: 'user' }]
 		}));
 
-		const aiResponse = getAIResponse(userInput);
+		const aiResponse = await getAIResponse(userInput);
 
 		setMessages((prevMessages) => ({
 			...prevMessages,
@@ -1213,10 +1215,36 @@ const PlaceInfoView = (props) => {
 		}));
 
 		event.target.message.value = '';
+		setMessageInput('');
 	};
 
-	const getAIResponse = (userInput) => {
-		return `AI says: You said "${userInput}"`;
+	const getAIResponse = async (userInput) => {
+		const requestBody = {
+			userInput: userInput,
+			place: placeItem?.name,
+			messages: getMessagesByKey(placeItem?.name)
+		}; 
+		try {
+			const response = await fetch('http://localhost:5000/get_ai_response', {
+			  method: 'POST',
+			  headers: {
+				'Content-Type': 'application/json',
+			  },
+			  body: JSON.stringify(requestBody)
+			});
+		
+			if (!response.ok) {
+			  throw new Error('Failed to fetch AI response');
+			}
+		
+			const data = await response.json();
+			const aiResponse = data.aiResponse;
+			
+			return aiResponse;
+		  } catch (error) {
+			console.error(error);
+			return 'Failed to get AI response';
+		  }
 	};
 
 	const renderPlaceInfo = () => {
@@ -1263,7 +1291,14 @@ const PlaceInfoView = (props) => {
 										</div>
 
 										<form onSubmit={handleFormSubmit} className="chat-form">
-											<input type="text" name="message" placeholder="Type your message" required />
+											<input
+												type="text"
+												name="message"
+												placeholder="Type your message"
+												value={messageInput}
+												onChange={(e) => setMessageInput(e.target.value)}
+												required
+											/>
 											<button type="submit">Send</button>
 										</form>
 									</div>
