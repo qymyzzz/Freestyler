@@ -17,7 +17,6 @@ class AIRequest(BaseModel):
 
 
 def generate_response(user_input, messages, place):
-    '''
     prev_responses = ""
     for response in messages[-6:]:
         prev_responses += response['text']
@@ -44,8 +43,6 @@ def generate_response(user_input, messages, place):
     )
     generated_response = completion.choices[0].message["content"]
     return generated_response
-    '''
-    return f"noob {user_input}"
 
 
 def get_ai_response(request: Request, ai_request: AIRequest):

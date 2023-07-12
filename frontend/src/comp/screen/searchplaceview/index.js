@@ -14,6 +14,8 @@ import {
 
 import { CloseIcon, Search2Icon } from "@chakra-ui/icons";
 
+import { transliterate as tr } from 'transliteration';
+
 import {
 	AutoComplete,
 	AutoCompleteInput,
@@ -290,171 +292,229 @@ const SearchPlaceView = (props) => {
 		return searchPlaceFromArray.includes(type);
 	};
 
-	const searchPlaceFromKeyword = (placeName) => {
-		let isCountrySearchEnabled = isSearchPlaceFromWithinSettings(
-			PlaceType.Country
-		);
-		let isStateSearchEnabled = isSearchPlaceFromWithinSettings(
-			PlaceType.State
-		);
-		let isCitySearchEnabled = isSearchPlaceFromWithinSettings(
-			PlaceType.City
-		);
+	const searchPlaceFromKeyword = async (placeName) => {
 
-		let filterCountryArray = [],
-			filterStateArray = [],
-			filterCityArray = [];
+		const baseUrl = 'https://nominatim.openstreetmap.org/search?';
+		const params = new URLSearchParams({
+			format: 'json',
+			q: placeName,
+		});
 
-		if (lodash.isString(placeName)) {
-			placeName = placeName.trim();
-		}
+		const url = baseUrl + params.toString();
 
-		if (
-			!lodash.isString(placeName) ||
-			(lodash.isString(placeName) && placeName.length === 0)
-		) {
-			updateState({
-				searchResultArray: [],
-			});
-
-			return;
-		}
-
-		const maxResultCount = 15;
-
-		if (isCountrySearchEnabled) {
-			filterCountryArray = MasterWorldArray.map((item) => {
-				return lodash.omit(item, ["states"]);
-			});
-
-			filterCountryArray = filterCountryArray.filter((item) => {
-				return item.name
-					.toLowerCase()
-					.includes(placeName.toLowerCase());
-			});
-
-			filterCountryArray = closetSort(filterCountryArray, placeName);
-
-			filterCountryArray = filterCountryArray.map((item) => {
-				return {
-					...item,
-					type: PlaceType.Country,
-					address: `${item.name}`,
-				};
-			});
-		}
-
-		if (isStateSearchEnabled) {
-			filterStateArray = MasterWorldArray.filter((item) => {
-				return (
-					(item?.states ?? []).filter((stateItem) => {
-						return stateItem.name
-							.toLowerCase()
-							.includes(placeName.toLowerCase());
-					}).length > 0
-				);
-			}).slice(0, maxResultCount);
-
-			filterStateArray = filterStateArray
-				.map((item) => {
-					return item.states.map((stateItem) => {
-						return {
-							...stateItem,
-							type: PlaceType.State,
-							countryItem: lodash.omit(item, ["states"]),
-							countryName: item.name,
-						};
-					});
-				})
-				.flat();
-
-			filterStateArray = filterStateArray
-				.filter((item) => {
+		// Make the API request
+		fetch(url, {
+			headers: {
+				'accept-language': 'en'
+			}
+		})
+			.then(response => response.json())
+			.then(data => {
+			let isCountrySearchEnabled = isSearchPlaceFromWithinSettings(
+				PlaceType.Country
+			);
+			let isStateSearchEnabled = isSearchPlaceFromWithinSettings(
+				PlaceType.State
+			);
+			let isCitySearchEnabled = isSearchPlaceFromWithinSettings(
+				PlaceType.City
+			);
+	
+			let filterCountryArray = [],
+				filterStateArray = [],
+				filterCityArray = [];
+	
+			if (lodash.isString(placeName)) {
+				placeName = placeName.trim();
+			}
+	
+			if (
+				!lodash.isString(placeName) ||
+				(lodash.isString(placeName) && placeName.length === 0)
+			) {
+				updateState({
+					searchResultArray: [],
+				});
+	
+				return;
+			}
+	
+			const maxResultCount = 15;
+	
+			if (isCountrySearchEnabled) {
+				filterCountryArray = MasterWorldArray.map((item) => {
+					return lodash.omit(item, ["states"]);
+				});
+	
+				filterCountryArray = filterCountryArray.filter((item) => {
 					return item.name
 						.toLowerCase()
 						.includes(placeName.toLowerCase());
-				})
-				.slice(0, maxResultCount);
-
-			filterStateArray = filterStateArray.map((item) => {
-				return lodash.omit(item, ["cities"]);
-			});
-
-			filterStateArray = closetSort(filterStateArray, placeName);
-
-			filterStateArray = filterStateArray.map((item) => {
-				return {
-					...item,
-					address: `${item.name}, ${item.countryName}`,
-				};
-			});
-		}
-
-		if (isCitySearchEnabled) {
-			filterCityArray = MasterWorldArray.filter((item) => {
-				return (
-					(item?.states ?? []).filter((stateItem) => {
-						return (
-							(stateItem?.cities ?? []).filter((cityItem) => {
-								return cityItem.name
-									.toLowerCase()
-									.includes(placeName.toLowerCase());
-							}).length > 0
-						);
-					}).length > 0
-				);
-			}).slice(0, maxResultCount);
-
-			filterCityArray = filterCityArray
-				.map((item) => {
-					return (item?.states ?? []).map((stateItem) => {
-						return (stateItem?.cities ?? []).map((cityItem) => {
+				});
+	
+				filterCountryArray = closetSort(filterCountryArray, placeName);
+	
+				filterCountryArray = filterCountryArray.map((item) => {
+					return {
+						...item,
+						type: PlaceType.Country,
+						address: `${item.name}`,
+					};
+				});
+			}
+	
+			if (isStateSearchEnabled) {
+				filterStateArray = MasterWorldArray.filter((item) => {
+					return (
+						(item?.states ?? []).filter((stateItem) => {
+							return stateItem.name
+								.toLowerCase()
+								.includes(placeName.toLowerCase());
+						}).length > 0
+					);
+				}).slice(0, maxResultCount);
+	
+				filterStateArray = filterStateArray
+					.map((item) => {
+						return item.states.map((stateItem) => {
 							return {
-								...cityItem,
-								type: PlaceType.City,
+								...stateItem,
+								type: PlaceType.State,
 								countryItem: lodash.omit(item, ["states"]),
-								stateItem: lodash.omit(stateItem, ["cities"]),
-								stateName: stateItem?.name,
 								countryName: item.name,
 							};
 						});
-					});
-				})
-				.flat(3);
+					})
+					.flat();
+	
+				filterStateArray = filterStateArray
+					.filter((item) => {
+						return item.name
+							.toLowerCase()
+							.includes(placeName.toLowerCase());
+					})
+					.slice(0, maxResultCount);
+	
+				filterStateArray = filterStateArray.map((item) => {
+					return lodash.omit(item, ["cities"]);
+				});
+	
+				filterStateArray = closetSort(filterStateArray, placeName);
+	
+				filterStateArray = filterStateArray.map((item) => {
+					return {
+						...item,
+						address: `${item.name}, ${item.countryName}`,
+					};
+				});
+			}
+	
+			if (isCitySearchEnabled) {
+				filterCityArray = MasterWorldArray.filter((item) => {
+					return (
+						(item?.states ?? []).filter((stateItem) => {
+							return (
+								(stateItem?.cities ?? []).filter((cityItem) => {
+									return cityItem.name
+										.toLowerCase()
+										.includes(placeName.toLowerCase());
+								}).length > 0
+							);
+						}).length > 0
+					);
+				}).slice(0, maxResultCount);
+	
+				filterCityArray = filterCityArray
+					.map((item) => {
+						return (item?.states ?? []).map((stateItem) => {
+							return (stateItem?.cities ?? []).map((cityItem) => {
+								return {
+									...cityItem,
+									type: PlaceType.City,
+									countryItem: lodash.omit(item, ["states"]),
+									stateItem: lodash.omit(stateItem, ["cities"]),
+									stateName: stateItem?.name,
+									countryName: item.name,
+								};
+							});
+						});
+					})
+					.flat(3);
+	
+				filterCityArray = filterCityArray
+					.filter((item) => {
+						return item?.name
+							?.toLowerCase()
+							.includes(placeName.toLowerCase());
+					})
+					.slice(0, maxResultCount);
+	
+				filterCityArray = closetSort(filterCityArray, placeName);
+	
+				filterCityArray = filterCityArray.map((item) => {
+					return {
+						...item,
+						address: `${item.name}, ${item.stateName}, ${item.countryName}`,
+					};
+				});
+			}
 
-			filterCityArray = filterCityArray
-				.filter((item) => {
-					return item?.name
-						?.toLowerCase()
-						.includes(placeName.toLowerCase());
-				})
-				.slice(0, maxResultCount);
+			let searchResultArray = [
+				...filterCityArray,
+				...filterStateArray,
+				...filterCountryArray,
+			];
 
-			filterCityArray = closetSort(filterCityArray, placeName);
+			// Process the response data
+			let natureWords = ["river", "mountain", "nature", "natural", "ocean", "sea", "lake", "water", "volcano"];
 
-			filterCityArray = filterCityArray.map((item) => {
-				return {
-					...item,
-					address: `${item.name}, ${item.stateName}, ${item.countryName}`,
-				};
+			if (data.length > 0) {
+				for(let j = 0; j < data.length; j++) {
+					let place = data[j];
+					for(let i = 0; i < natureWords.length; i++){
+						if(place.type.includes(natureWords[i]) || place.class.includes[natureWords[i]]){
+							
+							let item = {
+								address: tr(place.display_name.toString()),
+								name: tr(place.display_name.toString()),
+								type: place.type.toString(),
+								class: place.class.toString(),
+								latitude: place.lat.toString(),
+								longitude: place.lon.toString(),
+							};
+							searchResultArray.push(item);
+						}
+					}
+				}
+
+			searchResultArray = closetSort(searchResultArray, placeName).slice(
+				0,
+				maxResultCount
+			);
+			
+			updateState({
+				isSearching: false,
+				placeholder: searchResultArray.length > 0 ? "" : "No result found",
+				searchResultArray: searchResultArray,
 			});
-		}
+			} else {
+				console.log('No results found.');
 
-		let searchResultArray = [
-			...filterCityArray,
-			...filterStateArray,
-			...filterCountryArray,
-		];
-
-		searchResultArray = closetSort(searchResultArray, placeName).slice(
-			0,
-			maxResultCount
-		);
-
-		updateState({
-			isSearching: false,
-			placeholder: searchResultArray.length > 0 ? "" : "No result found",
-			searchResultArray: searchResultArray,
+				// Update state or perform further actions when no results are found
+				updateState({
+				  isSearching: false,
+				  placeholder: "No result found",
+				  searchResultArray: [],
+				});
+			}
+		})
+			.catch(error => {
+			console.error('Error:', error);
+			updateState({
+				isSearching: false,
+				placeholder: "Error occurred",
+				searchResultArray: [],
+			  });
 		});
 	};
 
@@ -524,6 +584,7 @@ const SearchPlaceView = (props) => {
 	/*  Custom-Component sub-render Methods */
 
 	const renderSearchResultList = () => {
+		
 		return (
 			<Flex
 				flex={1}
@@ -599,7 +660,8 @@ const SearchPlaceView = (props) => {
 						paddingY={3}
 						marginTop={"2px"}
 					>
-						{(state?.searchResultArray ?? []).map((item, index) => {
+						{state.searchResultArray.map((item, index) => {
+							
 							let favPlaceArray = userPref?.favPlaceArray ?? [];
 							favPlaceArray = favPlaceArray.map(
 								(favPlaceItem) => favPlaceItem?.address
@@ -614,15 +676,16 @@ const SearchPlaceView = (props) => {
 										favPlaceAddress === item?.address
 								);
 							}
-
+					
 							return (
 								<AutoCompleteItem
 									onClick={() => {
 										onPressPlaceItem(item);
 									}}
 									key={`option-${index}`}
-									getValue={(item) => item?.address}
-									value={item}
+									fixed
+									// getValue={(item) => "(issyk lake) " + item?.address}
+									value= {item}
 								>
 									<Flex
 										flexDirection={"column"}
@@ -640,7 +703,7 @@ const SearchPlaceView = (props) => {
 												boxSize={"15px"}
 												me={3}
 											/>
-											<Text fontSize="md">{`${item.address}`}</Text>
+											<Text fontSize="md">{`${item?.address}`}</Text>
 											<Spacer />
 											<IconButton
 												variant={"solid"}

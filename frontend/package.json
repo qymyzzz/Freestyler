@@ -5,7 +5,7 @@
 	"dependencies": {
 		"@chakra-ui/icons": "^2.0.8",
 		"@chakra-ui/react": "^2.2.8",
-		"@choc-ui/chakra-autocomplete": "^5.1.4",
+		"@choc-ui/chakra-autocomplete": "^5.1.5",
 		"@emotion/react": "^11.10.0",
 		"@emotion/styled": "^11.10.0",
 		"@testing-library/jest-dom": "^5.16.5",
@@ -29,6 +29,7 @@
 		"redux-persist": "^6.0.0",
 		"suncalc": "^1.9.0",
 		"topojson-client": "^3.1.0",
+		"transliteration": "^2.3.5",
 		"tz-lookup": "^6.1.25",
 		"versor": "^0.2.0",
 		"web-vitals": "^2.1.4"

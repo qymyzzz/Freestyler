@@ -225,7 +225,7 @@ const PlaceInfoView = (props) => {
 			favPlaceArray.forEach((placeObj, index) => {
 				let currentPlaceItem = getPlaceDetailsFromPlaceItem(placeObj);
 				currentPlaceItem = Object.assign({}, currentPlaceItem);
-				favPlaceDisplayArray.push(currentPlaceItem);
+				favPlaceDisplayArray.push(placeObj);
 			});
 
 			updateState({
@@ -1257,11 +1257,9 @@ const PlaceInfoView = (props) => {
 				defaultIndex={[0]}
 			>
 				
-				{!lodash.isNil(state?.countryDetailsObj) && isPlaceVisible && (
+				{isPlaceVisible && (
 					<>
-						{isSearchPlaceSectionWithinSettings(
-							SearchPlaceSectionType.PlaceDetails
-						) && (
+						
 							<AccordionItem key={1}>
 								<AccordionButton
 									bg={
@@ -1304,7 +1302,7 @@ const PlaceInfoView = (props) => {
 									</div>
 								</AccordionPanel>
 							</AccordionItem>
-						)}
+					
 					</>
 				)}
 				{isSearchPlaceSectionWithinSettings(
@@ -1351,7 +1349,7 @@ const PlaceInfoView = (props) => {
 															}
 															align={"left"}
 															fontSize={"md"}
-														>{`${favPlaceObj?.name?.value}`}</Text>
+														>{`${favPlaceObj?.name}`}</Text>
 														<Spacer />
 														<Tooltip
 															label="Remove place from favourite places"
@@ -1413,30 +1411,7 @@ const PlaceInfoView = (props) => {
 															/>
 														</Tooltip>
 													</Flex>
-													<Box mt={2}>
-														{Object.keys(
-															favPlaceObj
-														).map(
-															(
-																item,
-																placeIndex
-															) => {
-																if (
-																	item ===
-																	"name"
-																) {
-																	return null;
-																}
-
-																return renderFavPlaceProperty(
-																	favPlaceObj[
-																		item
-																	],
-																	placeIndex
-																);
-															}
-														)}
-													</Box>
+													
 													{index <
 														(
 															state?.favPlaceDisplayArray ??
