@@ -1,12 +1,11 @@
-.vscode/*
+# adds .vscode folder to ignored files
+.vscode/**/*
+
+# exclude these files from being ignored
 !.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
 !.vscode/extensions.json
-!.vscode/*.code-snippets
+!.vscode/launch.json
+!.vscode/tasks.json
 
-# Local History for Visual Studio Code
-.history/
-
-# Built Visual Studio Code Extensions
-*.vsix
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
