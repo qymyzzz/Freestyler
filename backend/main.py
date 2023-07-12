@@ -11,6 +11,7 @@ origins = [
     "http://localhost",
     "http://localhost:3000",
     "http://localhost:5000",
+    "https://freestyler-pbu0pnhl5-sagyn-s.vercel.app",
 ]
 
 app.add_middleware(
