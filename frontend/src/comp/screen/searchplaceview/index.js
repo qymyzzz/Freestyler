@@ -466,7 +466,7 @@ const SearchPlaceView = (props) => {
 			];
 
 			// Process the response data
-			let natureWords = ["river", "mountain", "nature", "natural", "ocean", "sea", "lake", "water", "volcano"];
+			let natureWords = ["river", "mountain", "nature", "natural", "ocean", "sea", "lake", "water", "volcano", "wood"];
 
 			if (data.length > 0) {
 				for(let j = 0; j < data.length; j++) {

@@ -36,6 +36,7 @@ import { connect } from "react-redux";
 import tzlookup from "tz-lookup";
 import "./placeInfo.css";
 
+
 import {
 	degToDMM,
 	degToDMS,
@@ -1194,28 +1195,40 @@ const PlaceInfoView = (props) => {
 
 	const [messages, setMessages] = useState({});
 
+	const [isGeneratingResponse, setIsGeneratingResponse] = useState(false);
+
+	const [isAITyping, setIsAITyping] = useState(false);
+
 	const getMessagesByKey = key => {
-		return messages[key] || [];
+		const messages_list = (messages[key] || []);
+		const firstMessage = { text: `Hello! I am a guide of ${key}. Ask me anything!`, sender: "AI" };
+  		return [firstMessage, ...messages_list];
 	};
 
 	const handleFormSubmit = async (event) => {
 		event.preventDefault();
+		setMessageInput('');
+		setIsGeneratingResponse(true); // Disable the button
+		setIsAITyping(true); // Set AI is typing
+
 		const userInput = event.target.message.value;
 
 		setMessages((prevMessages) => ({
 			...prevMessages,
 			[placeItem?.name]: [...(prevMessages[placeItem?.name] || []), { text: userInput, sender: 'user' }]
 		}));
-
+		
+		await new Promise(resolve => setTimeout(resolve, 2000));
+		
 		const aiResponse = await getAIResponse(userInput);
 
 		setMessages((prevMessages) => ({
 			...prevMessages,
 			[placeItem?.name]: [...(prevMessages[placeItem?.name] || []), { text: aiResponse, sender: 'AI' }]
 		}));
-
 		event.target.message.value = '';
-		setMessageInput('');
+		setIsGeneratingResponse(false); // Enable the button
+		setIsAITyping(false); // Set AI is not typing
 	};
 
 	const getAIResponse = async (userInput) => {
@@ -1226,6 +1239,7 @@ const PlaceInfoView = (props) => {
 		}; 
 		try {
 			const response = await fetch('https://freestyler-backend.onrender.com/get_ai_response', {
+			// const response = await fetch('http://localhost:5000/get_ai_response', {
 			  method: 'POST',
 			  headers: {
 				'Content-Type': 'application/json',
@@ -1248,6 +1262,16 @@ const PlaceInfoView = (props) => {
 	};
 
 	const renderPlaceInfo = () => {
+		const chatContainerRef = useRef(null);
+		const [isTypingAnimationEnded, setIsTypingAnimationEnded] = useState(false);
+		useEffect(() => {
+			chatContainerRef.current?.scrollIntoView({ behavior: 'smooth'});
+		}, [messages]);
+		useEffect(() => {
+			if (isTypingAnimationEnded && chatContainerRef.current) {
+				chatContainerRef.current?.scrollIntoView({ behavior: 'smooth'});
+			}
+		}, [isTypingAnimationEnded]);
 		return (
 			<Accordion
 				flex={1}
@@ -1286,6 +1310,22 @@ const PlaceInfoView = (props) => {
 												{message.text}
 											</p>
 											))}
+											{isAITyping && (
+												<div className="typing-animation">
+													<p
+														className={`message AI ai-typing ${isTypingAnimationEnded ? 'animation-ended' : ''}`}
+														onAnimationEnd={() => setIsTypingAnimationEnded(true)}
+													>
+														AI is typing
+														<span className="dots">
+															<span className="dot"></span>
+															<span className="dot"></span>
+															<span className="dot"></span>
+														</span>
+													</p>
+												</div>
+											)}
+											<div ref={chatContainerRef} />
 										</div>
 
 										<form onSubmit={handleFormSubmit} className="chat-form">
@@ -1297,7 +1337,7 @@ const PlaceInfoView = (props) => {
 												onChange={(e) => setMessageInput(e.target.value)}
 												required
 											/>
-											<button type="submit">Send</button>
+											<button type="submit" disabled={isGeneratingResponse} className={isGeneratingResponse ? 'disabled-button' : ''}>Send</button>
 										</form>
 									</div>
 								</AccordionPanel>
