@@ -16,6 +16,9 @@ import lodash from "lodash";
 import Actions from "../../redux/action";
 import Constants from "../../utils/Constants";
 
+import MasterWorldArray from "../../data/info/countries+states+cities.json";
+
+
 import {
 	fill,
 	fillCity,
@@ -1419,6 +1422,7 @@ const MasterGlobeView = (props) => {
 		let selectedPlaceCoordinate = null;
 		let isPlaceVisible = false;
 		let pos = projection.invert(d3.pointer(event, canvas.node()));
+		// console.log(pos[0], pos[1]);
 
 		// console.log("pos: ", pos);
 
@@ -1663,32 +1667,93 @@ const MasterGlobeView = (props) => {
 
 	/*  Custom-Component sub-render Methods */
 
+
+	const handleZoomIn = () => {
+		let { scaleFactor } = globeDataObj.current;
+
+		scaleFactor = Math.min(scaleFactor + 0.3, 8.0);
+
+		updateGlobeData({
+			transform: event.transform,
+			scaleFactor: scaleFactor,
+		});
+
+		scale();
+	};
+
+	const handleZoomOut = () => {
+		let { scaleFactor } = globeDataObj.current;
+
+		scaleFactor = Math.max(scaleFactor - 0.3, 0.9);
+
+		updateGlobeData({
+			transform: event.transform,
+			scaleFactor: scaleFactor,
+		});
+
+		scale();
+	};
+
+	const handleRandomPlace = async (event) => {
+		let places = [];
+		let country = MasterWorldArray[Math.floor(Math.random() * MasterWorldArray.length)];
+		places.push(country)
+		let state = country.states[Math.floor(Math.random() * country.states.length)];
+		if(typeof(state) !== 'undefined'){
+			places.push(state)
+			let city = state.cities[Math.floor(Math.random() * state.cities.length)];
+			if(typeof(city) !== 'undefined'){
+				places.push(city)
+			}
+		}
+		
+		let place = places[Math.floor(Math.random() * places.length)];
+		
+		await props.setUserConfig({
+			...userConfig,
+			selectedPlaceItem: place,
+			isPlaceVisible: true,
+			cond: true,
+		});
+	}
+
 	const renderMasterContainer = () => {
 		return (
 			<>
 				<Flex
 					ref={containerRef}
 					flex={1}
-					bg={"#000"}
-					// zIndex={10}
+					bg="#000"
 					className="globeContainer"
+					justify="flex-end"
+				
+					position="relative"
 				>
-					<canvas
-						ref={canvasRef}
-						className="globe"
-					></canvas>
-					<svg
-						ref={svgRef}
-						className="globesvg"
-					></svg>
-					<canvas
-						ref={canvasOpRef}
-						className="operation"
-					></canvas>
-					<svg
-						ref={svgMarkerRef}
-						className="globesvg"
-					></svg>
+					<canvas ref={canvasRef} className="globe"></canvas>
+					<svg ref={svgRef} className="globesvg"></svg>
+					<canvas ref={canvasOpRef} className="operation"></canvas>
+					<svg ref={svgMarkerRef} className="globesvg"></svg>
+
+					<div className="absolute top-0 right-0 mt-2 mr-2 space-x-2">
+						<button
+							onClick={handleZoomIn}
+							className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+						>
+						+
+						</button>
+						<button
+							onClick={handleZoomOut}
+							className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+						>
+						-
+						</button>
+						<button
+							onClick={handleRandomPlace}
+							className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+						>
+						R
+						</button>
+					</div>
 				</Flex>
 			</>
 		);

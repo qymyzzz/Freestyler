@@ -78,6 +78,7 @@ const SearchPlaceView = (props) => {
 			selectedCountryCode: null,
 			selectedPlaceCoordinate: null,
 			selectedPlaceItem: null,
+			cond: false,
 		});
 		addEventListener();
 		setTimeout(async () => {
@@ -97,10 +98,18 @@ const SearchPlaceView = (props) => {
 	}, []);
 
 	useEffect(() => {
-		let selectedCountryCode = userConfig?.selectedCountryCode;
+		if(userConfig?.cond === true){
+			updateState({
+				placeItem: userConfig?.selectedPlaceItem,
+				cond: false,
+			});
+		}
+		else{
+			let selectedCountryCode = userConfig?.selectedCountryCode;
 
-		if (!lodash.isNil(selectedCountryCode)) {
-			setCountryFromCountryCode(selectedCountryCode);
+			if (!lodash.isNil(selectedCountryCode)) {
+				setCountryFromCountryCode(selectedCountryCode);
+			}
 		}
 	}, [userConfig]);
 
@@ -165,7 +174,7 @@ const SearchPlaceView = (props) => {
 		let filterCountryArray = MasterWorldArray.filter((item) => {
 			return item.numeric_code
 				.toLowerCase()
-				.includes(countryCode.toLowerCase());
+				.includes(countryCode.toString().toLowerCase());
 		}).slice(0, 1);
 
 		let nearByCityDistance = 2000;
@@ -339,7 +348,7 @@ const SearchPlaceView = (props) => {
 				return;
 			}
 	
-			const maxResultCount = 15;
+			const maxResultCount = 1000;
 	
 			if (isCountrySearchEnabled) {
 				filterCountryArray = MasterWorldArray.map((item) => {

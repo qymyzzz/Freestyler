@@ -1218,7 +1218,7 @@ const PlaceInfoView = (props) => {
 			[placeItem?.name]: [...(prevMessages[placeItem?.name] || []), { text: userInput, sender: 'user' }]
 		}));
 		
-		await new Promise(resolve => setTimeout(resolve, 2000));
+		// await new Promise(resolve => setTimeout(resolve, 2000));
 		
 		const aiResponse = await getAIResponse(userInput);
 
@@ -1272,6 +1272,7 @@ const PlaceInfoView = (props) => {
 				chatContainerRef.current?.scrollIntoView({ behavior: 'smooth'});
 			}
 		}, [isTypingAnimationEnded]);
+		// console.log(placeItem)
 		return (
 			<Accordion
 				flex={1}
