@@ -1233,7 +1233,8 @@ const PlaceInfoView = (props) => {
 		  messages: getMessagesByKey(placeItem?.name),
 		};
 		try {
-		  const response = await fetch('http://localhost:5000/get_ai_response', {
+			const response = await fetch('https://freestyler-backend.onrender.com/get_ai_response', {
+		//   const response = await fetch('http://localhost:5000/get_ai_response', {
 			method: 'POST',
 			headers: {
 			  'Content-Type': 'application/json',
