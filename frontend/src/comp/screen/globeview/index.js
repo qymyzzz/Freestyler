@@ -1751,7 +1751,7 @@ const MasterGlobeView = (props) => {
 							onClick={handleRandomPlace}
 							className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
 						>
-						R
+						<img src="./dice.png" alt="Dice Icon"></img>
 						</button>
 					</div>
 				</Flex>

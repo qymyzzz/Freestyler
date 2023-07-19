@@ -26,8 +26,7 @@ app.add_middleware(
 @app.post("/get_ai_response")
 async def handle_ai_request(request: Request):
     ai_request = await request.json()
-    response = get_ai_response(request, ai_request)
-    return JSONResponse(content=response)
+    return get_ai_response(request, ai_request)
 
 
 if __name__ == "__main__":

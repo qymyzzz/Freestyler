@@ -1199,6 +1199,8 @@ const PlaceInfoView = (props) => {
 
 	const [isAITyping, setIsAITyping] = useState(false);
 
+	const chatContainerRef = useRef(null);
+
 	const getMessagesByKey = key => {
 		const messages_list = (messages[key] || []);
 		const firstMessage = { text: `Hello! I am a guide of ${key}. Ask me anything!`, sender: "AI" };
@@ -1217,61 +1219,112 @@ const PlaceInfoView = (props) => {
 			...prevMessages,
 			[placeItem?.name]: [...(prevMessages[placeItem?.name] || []), { text: userInput, sender: 'user' }]
 		}));
-		
-		// await new Promise(resolve => setTimeout(resolve, 2000));
-		
-		const aiResponse = await getAIResponse(userInput);
 
-		setMessages((prevMessages) => ({
-			...prevMessages,
-			[placeItem?.name]: [...(prevMessages[placeItem?.name] || []), { text: aiResponse, sender: 'AI' }]
-		}));
 		event.target.message.value = '';
-		setIsGeneratingResponse(false); // Enable the button
-		setIsAITyping(false); // Set AI is not typing
+
+		startAIResponseStreaming(userInput);
+		
 	};
 
-	const getAIResponse = async (userInput) => {
+	const startAIResponseStreaming = async (userInput) => {
 		const requestBody = {
-			userInput: userInput,
-			place: placeItem?.name,
-			messages: getMessagesByKey(placeItem?.name)
-		}; 
+		  userInput: userInput,
+		  place: placeItem?.name,
+		  messages: getMessagesByKey(placeItem?.name),
+		};
 		try {
-			const response = await fetch('https://freestyler-backend.onrender.com/get_ai_response', {
-			// const response = await fetch('http://localhost:5000/get_ai_response', {
-			  method: 'POST',
-			  headers: {
-				'Content-Type': 'application/json',
-			  },
-			  body: JSON.stringify(requestBody)
-			});
-		
-			if (!response.ok) {
-			  throw new Error('Failed to fetch AI response');
-			}
-		
-			const data = await response.json();
-			const aiResponse = data.aiResponse;
-			
-			return aiResponse;
-		  } catch (error) {
-			console.error(error);
-			return 'Failed to get AI response';
+		  const response = await fetch('http://localhost:5000/get_ai_response', {
+			method: 'POST',
+			headers: {
+			  'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(requestBody),
+		  });
+	
+		  if (!response.ok) {
+			throw new Error('Failed to fetch AI response');
 		  }
+	
+		  const reader = response.body.getReader();
+
+		  const decoder = new TextDecoder("utf-8");
+
+		  let responseText = '';
+
+		  setMessages((prevMessages) => ({
+			...prevMessages,
+			[placeItem?.name]: [
+			  ...prevMessages[placeItem?.name],
+			  { text: responseText, sender: 'AI' },
+			],
+		  }));
+
+		  while(true){
+			const chunk = await reader.read()
+			const {done, value} = chunk;
+			if(done){
+				break;
+			}
+			const decodedChunk = decoder.decode(value);
+			responseText += decodedChunk;
+			console.log(decodedChunk)
+
+			setMessages((prevMessages) => {
+				const { name } = placeItem;
+				const messages = prevMessages[name];
+				const lastElement = responseText; // Get the last element
+
+				const updatedMessages = messages.slice(0, -1); // Get all elements except the last one
+			  
+				return {
+				  [name]: [
+					...updatedMessages,
+					{ text: lastElement, sender: 'AI' },
+				  ],
+				};
+			  });
+		  }
+		  setIsGeneratingResponse(false); // Enable the button
+		  setIsAITyping(false); // Set AI is not typing
+		  
+		} catch (error) {
+		  console.error(error);
+		  setMessages((prevMessages) => {
+			const { name } = placeItem;
+			const messages = prevMessages[name];
+			const lastElement = "Failed to get AI response"; // Get the last element
+
+			const updatedMessages = messages.slice(0, -1); // Get all elements except the last one
+		  
+			return {
+			  [name]: [
+				...updatedMessages,
+				{ text: lastElement, sender: 'AI' },
+			  ],
+			};
+		  });
+		  setIsGeneratingResponse(false); // Enable the button
+		  setIsAITyping(false); // Set AI is not typing
+		}
 	};
+
+	const formatMessageText = (text) => {
+		if (text) {
+		  const listItems = text.split("\n").map((item, index) => (
+			<li key={index}>{item}</li>
+		  ));
+	  
+		  return <ol>{listItems}</ol>;
+		}
+	  
+		return text;
+	  };
+	  
 
 	const renderPlaceInfo = () => {
-		const chatContainerRef = useRef(null);
-		const [isTypingAnimationEnded, setIsTypingAnimationEnded] = useState(false);
 		useEffect(() => {
 			chatContainerRef.current?.scrollIntoView({ behavior: 'smooth'});
 		}, [messages]);
-		useEffect(() => {
-			if (isTypingAnimationEnded && chatContainerRef.current) {
-				chatContainerRef.current?.scrollIntoView({ behavior: 'smooth'});
-			}
-		}, [isTypingAnimationEnded]);
 		// console.log(placeItem)
 		return (
 			<Accordion
@@ -1308,24 +1361,9 @@ const PlaceInfoView = (props) => {
 										<div className="chat-messages">
 											{getMessagesByKey(placeItem?.name).map((message, index) => (
 											<p key={index} className={`message ${message.sender}`}>
-												{message.text}
+												{formatMessageText(message.text)}
 											</p>
 											))}
-											{isAITyping && (
-												<div className="typing-animation">
-													<p
-														className={`message AI ai-typing ${isTypingAnimationEnded ? 'animation-ended' : ''}`}
-														onAnimationEnd={() => setIsTypingAnimationEnded(true)}
-													>
-														AI is typing
-														<span className="dots">
-															<span className="dot"></span>
-															<span className="dot"></span>
-															<span className="dot"></span>
-														</span>
-													</p>
-												</div>
-											)}
 											<div ref={chatContainerRef} />
 										</div>
 
