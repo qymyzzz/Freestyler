@@ -1268,7 +1268,6 @@ const PlaceInfoView = (props) => {
 			}
 			const decodedChunk = decoder.decode(value);
 			responseText += decodedChunk;
-			console.log(decodedChunk)
 
 			setMessages((prevMessages) => {
 				const { name } = placeItem;
