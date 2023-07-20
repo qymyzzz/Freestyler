@@ -1278,6 +1278,7 @@ const PlaceInfoView = (props) => {
 				const updatedMessages = messages.slice(0, -1); // Get all elements except the last one
 			  
 				return {
+				  ...prevMessages,
 				  [name]: [
 					...updatedMessages,
 					{ text: lastElement, sender: 'AI' },
@@ -1298,6 +1299,7 @@ const PlaceInfoView = (props) => {
 			const updatedMessages = messages.slice(0, -1); // Get all elements except the last one
 		  
 			return {
+			  ...prevMessages,
 			  [name]: [
 				...updatedMessages,
 				{ text: lastElement, sender: 'AI' },
