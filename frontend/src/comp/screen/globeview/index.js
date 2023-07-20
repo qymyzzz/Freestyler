@@ -6,6 +6,7 @@ import * as d3 from "d3";
 import SunCalc from "suncalc";
 import * as topojson from "topojson-client";
 import versor from "versor";
+import dice from './assets/dice.png';
 
 import "./index.css";
 
@@ -1734,26 +1735,27 @@ const MasterGlobeView = (props) => {
 					<canvas ref={canvasOpRef} className="operation"></canvas>
 					<svg ref={svgMarkerRef} className="globesvg"></svg>
 
-					<div className="absolute top-0 right-0 mt-2 mr-2 space-x-2">
+					<div className="absolute top-0 right-0 mt-2 mr-2 flex items-center space-x-2">
 						<button
 							onClick={handleZoomIn}
 							className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
 						>
-						+
+							+
 						</button>
 						<button
 							onClick={handleZoomOut}
 							className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
 						>
-						-
+							-
 						</button>
 						<button
 							onClick={handleRandomPlace}
-							className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+							className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded w-10 h-10"
 						>
-						<img src="./dice.png" alt="Dice Icon"></img>
+							<img src={dice} alt="Dice Icon" className="w-full h-full object-cover"></img>
 						</button>
 					</div>
+
 				</Flex>
 			</>
 		);
