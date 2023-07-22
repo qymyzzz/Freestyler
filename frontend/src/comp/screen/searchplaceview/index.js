@@ -16,12 +16,15 @@ import { CloseIcon, Search2Icon } from "@chakra-ui/icons";
 
 import { transliterate as tr } from 'transliteration';
 
+
 import {
 	AutoComplete,
 	AutoCompleteInput,
 	AutoCompleteItem,
 	AutoCompleteList,
 } from "@choc-ui/chakra-autocomplete";
+
+import { useTranslation } from 'react-i18next';
 
 import { BsFillStarFill, BsStar } from "react-icons/bs";
 
@@ -60,6 +63,8 @@ const SearchPlaceView = (props) => {
 		favPlaceArray: userPref?.favPlaceArray ?? [],
 		isAppLoaded: false,
 	});
+
+	const { t } = useTranslation();
 
 	const [searchKeyword, setSearchKeyword] = useState("");
 
@@ -123,7 +128,7 @@ const SearchPlaceView = (props) => {
 	useEffect(() => {
 		clearSearchTimer();
 		updateState({
-			placeholder: "Searching...",
+			placeholder: t('Searching'),
 			isSearching: true,
 		});
 		searchTimer.current = setTimeout(() => {
@@ -643,7 +648,7 @@ const SearchPlaceView = (props) => {
 						/>
 						<AutoCompleteInput
 							variant="filled"
-							placeholder="Enter place name to search"
+							placeholder={t('Enter_place_name')}
 							value={searchKeyword}
 							onChange={handleChange}
 						/>

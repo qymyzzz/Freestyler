@@ -36,6 +36,8 @@ import { connect } from "react-redux";
 import tzlookup from "tz-lookup";
 import "./placeInfo.css";
 
+import { useTranslation } from 'react-i18next';
+
 
 import {
 	degToDMM,
@@ -58,6 +60,7 @@ import PostalCodeArray from "../../data/info/postal-codes.json";
 const { PlaceType, CoordinateFormat, SearchPlaceSectionType } = Constants;
 
 const MasterPlaceConfig = {
+
 	[PlaceType.Country]: {
 		name: {
 			title: "Name",
@@ -126,6 +129,9 @@ const TimeZoneConfig = {
 };
 
 const PlaceInfoView = (props) => {
+
+	const { t } = useTranslation();
+
 	const {
 		userConfig,
 		userPref,
@@ -1203,7 +1209,7 @@ const PlaceInfoView = (props) => {
 
 	const getMessagesByKey = key => {
 		const messages_list = (messages[key] || []);
-		const firstMessage = { text: `Hello! I am a guide of ${key}. Ask me anything!`, sender: "AI" };
+		const firstMessage = { text: `${t('Hello')} ${key}. ${t('Hello_continue')}`, sender: "AI" };
   		return [firstMessage, ...messages_list];
 	};
 
@@ -1354,7 +1360,7 @@ const PlaceInfoView = (props) => {
 										fontWeight={"medium"}
 										textAlign="left"
 									>
-										{`Chat with the guide - ${placeItem?.name}`}
+										{`${t('Chat_with_the_guide')} - ${placeItem?.name}`}
 									</Box>
 									<AccordionIcon />
 								</AccordionButton>
@@ -1373,12 +1379,12 @@ const PlaceInfoView = (props) => {
 											<input
 												type="text"
 												name="message"
-												placeholder="Type your message"
+												placeholder={t('Type_your_message')}
 												value={messageInput}
 												onChange={(e) => setMessageInput(e.target.value)}
 												required
 											/>
-											<button type="submit" disabled={isGeneratingResponse} className={isGeneratingResponse ? 'disabled-button' : ''}>Send</button>
+											<button type="submit" disabled={isGeneratingResponse} className={isGeneratingResponse ? 'disabled-button' : ''}>{t('Send')}</button>
 										</form>
 									</div>
 								</AccordionPanel>
@@ -1404,7 +1410,7 @@ const PlaceInfoView = (props) => {
 									fontWeight={"medium"}
 									textAlign="left"
 								>
-									{`Favourite Places - (${state?.favPlaceDisplayArray.length})`}
+									{`${t('Favourite_Places')} - (${state?.favPlaceDisplayArray.length})`}
 								</Box>
 								<AccordionIcon />
 							</AccordionButton>

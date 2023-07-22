@@ -7,7 +7,7 @@ import {
 	useDisclosure
 } from "@chakra-ui/react";
 
-
+import i18n from 'i18next';
 
 
 import { connect } from "react-redux";
@@ -61,6 +61,14 @@ const NavBarView = (props) => {
 		settingsRef.current && settingsRef.current.openModal();
 	};
 
+	const handleRussian = () => {
+		i18n.changeLanguage('ru');
+	};
+
+	const handleEnglish = () => {
+		i18n.changeLanguage('en');
+	};
+
 	/*  Server Request Methods  */
 
 	/*  Server Response Methods  */
@@ -108,6 +116,10 @@ const NavBarView = (props) => {
 							</Heading>
 						</Flex>
 					</Flex>
+					{/* <Flex>
+						<button onClick={handleRussian}>Russian</button>
+						<button onClick={handleEnglish}>English</button>
+					</Flex> */}
 				</Flex>
 			</>
 		);
