@@ -12,9 +12,9 @@ padding: 16px;
 
 /* Chat Messages */
 .chat-messages {
-height: 400px;
+height: 58vh;
 overflow-y: auto;
-max-width: 600px;
+max-width: 90vw;
 }
 
 /* Individual Message */
