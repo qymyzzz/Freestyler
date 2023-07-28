@@ -1226,11 +1226,48 @@ const PlaceInfoView = (props) => {
 			[placeItem?.name]: [...(prevMessages[placeItem?.name] || []), { text: userInput, sender: 'user' }]
 		}));
 
-		event.target.message.value = '';
+		const aiResponse = await getAIResponse(userInput);
 
-		startAIResponseStreaming(userInput);
-		
+		setMessages((prevMessages) => ({
+			...prevMessages,
+			[placeItem?.name]: [...(prevMessages[placeItem?.name] || []), { text: aiResponse, sender: 'AI' }]
+		}));
+
+		event.target.message.value = '';
+		setMessageInput('');
+		setIsGeneratingResponse(false); // Enable the button
+		setIsAITyping(false); // Set AI is not typing
 	};
+
+	const getAIResponse = async (userInput) => {
+		const requestBody = {
+			userInput: userInput,
+			place: placeItem?.name,
+			messages: getMessagesByKey(placeItem?.name)
+		}; 
+		try {
+			// const response = await fetch('https://freestyler-backend.onrender.com/get_ai_response', {
+			const response = await fetch('http://localhost:5000/get_ai_response', {
+				method: 	'POST',
+				headers: {
+				'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(requestBody)
+			});
+		
+			if (!response.ok) {
+				throw new Error('Failed to fetch AI response');
+			}
+		
+			const data = await response.json();
+			const aiResponse = data.aiResponse;
+			
+			return aiResponse;
+			} catch (error) {
+			console.error(error);
+			return 'Failed to get AI response';
+			}
+		};
 
 	const startAIResponseStreaming = async (userInput) => {
 		const requestBody = {
@@ -1239,8 +1276,8 @@ const PlaceInfoView = (props) => {
 		  messages: getMessagesByKey(placeItem?.name),
 		};
 		try {
-			const response = await fetch('https://freestyler-backend.onrender.com/get_ai_response', {
-		//   const response = await fetch('http://localhost:5000/get_ai_response', {
+			// const response = await fetch('https://freestyler-backend.onrender.com/get_ai_response', {
+		  const response = await fetch('http://localhost:5000/get_ai_response', {
 			method: 'POST',
 			headers: {
 			  'Content-Type': 'application/json',
@@ -1316,10 +1353,34 @@ const PlaceInfoView = (props) => {
 		}
 	};
 
-	const formatMessageText = (text) => {
+	function urlify(text) {
+		var imageRegex = /(!\[.*?]\()(https?:\/\/[^\s)]+)\)/g;
+		var imageLinkRegex = /(\[Image]\()(https?:\/\/[^\s)]+)\)/g;
+		var linkRegex = /(\[.*?]\()(https?:\/\/[^\s)]+)\)/g;
+	  
+		// Replace image links
+		text = text.replace(imageRegex, '<figure><a href="$2" target="_blank"><img src="$2" alt="Image" /></a></figure>');
+	  
+		// Replace [Image] links
+		text = text.replace(imageLinkRegex, '<figure><a href="$2" target="_blank"><img src="$2" alt="Image" /></a></figure>');
+	  
+		// Replace regular links
+		text = text.replace(linkRegex, function(match, p1, p2) {
+		  var linkText = p1.substring(1, p1.length - 2);
+		  return '<a href="' + p2 + '" target="_blank" style="color: blue; text-decoration: underline;">' + linkText + '</a>';
+		});
+	  
+		return text;
+	  }
+	  
+	  
+	  
+	  const formatMessageText = (text) => {
 		if (text) {
-		  const listItems = text.split("\n").map((item, index) => (
-			<li key={index}>{item}</li>
+		  const formattedText = urlify(text);
+	  
+		  const listItems = formattedText.split("\n").map((item, index) => (
+			<li key={index} dangerouslySetInnerHTML={{ __html: item }} />
 		  ));
 	  
 		  return <ol>{listItems}</ol>;
@@ -1328,11 +1389,18 @@ const PlaceInfoView = (props) => {
 		return text;
 	  };
 	  
+	  
 
 	const renderPlaceInfo = () => {
+		const [isTypingAnimationEnded, setIsTypingAnimationEnded] = useState(false);
 		useEffect(() => {
 			chatContainerRef.current?.scrollIntoView({ behavior: 'smooth'});
 		}, [messages]);
+		useEffect(() => {
+			if (isTypingAnimationEnded && chatContainerRef.current) {
+				chatContainerRef.current?.scrollIntoView({ behavior: 'smooth'});
+			}
+		}, [isTypingAnimationEnded]);
 		// console.log(placeItem)
 		return (
 			<Accordion
@@ -1372,6 +1440,21 @@ const PlaceInfoView = (props) => {
 												{formatMessageText(message.text)}
 											</p>
 											))}
+											{isAITyping && (
+												<div className="typing-animation">
+													<p
+														className={`message AI ai-typing ${isTypingAnimationEnded ? 'animation-ended' : ''}`}
+														onAnimationEnd={() => setIsTypingAnimationEnded(true)}
+													>
+														Exploring the depths of knowledge
+														<span className="dots">
+															<span className="dot"></span>
+															<span className="dot"></span>
+															<span className="dot"></span>
+														</span>
+													</p>
+												</div>
+											)}
 											<div ref={chatContainerRef} />
 										</div>
 
