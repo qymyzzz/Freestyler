@@ -1356,6 +1356,7 @@ const PlaceInfoView = (props) => {
 	function urlify(text) {
 		var imageRegex = /(!\[.*?]\()(https?:\/\/[^\s)]+)\)/g;
 		var imageLinkRegex = /(\[Image]\()(https?:\/\/[^\s)]+)\)/g;
+		var thumbnailImageLinkRegex = /(\[Thumbnail Image]\()(https?:\/\/[^\s)]+)\)/g;
 		var linkRegex = /(\[.*?]\()(https?:\/\/[^\s)]+)\)/g;
 	  
 		// Replace image links
@@ -1364,6 +1365,9 @@ const PlaceInfoView = (props) => {
 		// Replace [Image] links
 		text = text.replace(imageLinkRegex, '<figure><a href="$2" target="_blank"><img src="$2" alt="Image" /></a></figure>');
 	  
+		// Replace [Thumbnail image] links
+		text = text.replace(thumbnailImageLinkRegex, '<figure><a href="$2" target="_blank"><img src="$2" alt="Image" /></a></figure>');
+
 		// Replace regular links
 		text = text.replace(linkRegex, function(match, p1, p2) {
 		  var linkText = p1.substring(1, p1.length - 2);
