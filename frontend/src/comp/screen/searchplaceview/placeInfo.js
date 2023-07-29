@@ -28,6 +28,8 @@ import {
 
 import { BsFillStarFill } from "react-icons/bs";
 
+import { InfoIcon } from "@chakra-ui/icons";
+
 import { MdLocationPin } from "react-icons/md";
 
 import lodash from "lodash";
@@ -1405,7 +1407,16 @@ const PlaceInfoView = (props) => {
 				chatContainerRef.current?.scrollIntoView({ behavior: 'smooth'});
 			}
 		}, [isTypingAnimationEnded]);
-		// console.log(placeItem)
+		const [showAccordion, setShowAccordion] = useState(false);
+
+		useEffect(() => {
+			if (placeItem && ("countryName" in placeItem || "capital" in placeItem)) {
+				setShowAccordion(true);
+			  } else {
+				setShowAccordion(false);
+			  }
+		}, [placeItem]);
+		
 		return (
 			<Accordion
 				flex={1}
@@ -1418,7 +1429,7 @@ const PlaceInfoView = (props) => {
 				{isPlaceVisible && (
 					<>
 						
-							<AccordionItem key={1}>
+							<AccordionItem key={0}>
 								<AccordionButton
 									bg={
 										colorMode === "dark"
@@ -1476,7 +1487,185 @@ const PlaceInfoView = (props) => {
 									</div>
 								</AccordionPanel>
 							</AccordionItem>
-					
+							{showAccordion && isSearchPlaceSectionWithinSettings(
+								SearchPlaceSectionType.PlaceDetails
+							) && (
+								<AccordionItem key={1}>
+									<AccordionButton
+										bg={
+											colorMode === "dark"
+												? "gray.700"
+												: "gray.100"
+										}
+									>
+										<Box
+											width={"100%"}
+											fontSize={"md"}
+											fontWeight={"medium"}
+											textAlign="left"
+										>
+											{`Place Details - ${placeItem?.name}`}
+										</Box>
+										<AccordionIcon />
+									</AccordionButton>
+									<AccordionPanel>
+										<Box overflowY={"auto"}>
+											{Object.keys(state?.placeDetailsObj).map((item, index) => {
+												return renderPlaceProperty(
+													state?.placeDetailsObj[item],
+													`place${index}`
+												);
+											})}
+										</Box>
+									</AccordionPanel>
+								</AccordionItem>
+						)}
+
+						{showAccordion && isSearchPlaceSectionWithinSettings(
+							SearchPlaceSectionType.CountryDetails
+						) && (
+							<AccordionItem key={2}>
+								<AccordionButton
+									bg={
+										colorMode === "dark"
+											? "gray.700"
+											: "gray.100"
+									}
+								>
+									<Box
+										width={"100%"}
+										fontSize={"md"}
+										fontWeight={"medium"}
+										textAlign="left"
+									>
+										{`Country Details - ${state?.countryDetailsObj?.name?.value}`}
+									</Box>
+									<AccordionIcon />
+								</AccordionButton>
+								<AccordionPanel>
+									<Box overflowY={"auto"}>
+										{Object.keys(
+											state?.countryDetailsObj
+										).map((item, index) => {
+											return renderPlaceProperty(
+												state?.countryDetailsObj[item],
+												`country${index}`
+											);
+										})}
+									</Box>
+								</AccordionPanel>
+							</AccordionItem>
+						)}
+						{showAccordion && isSearchPlaceSectionWithinSettings(
+							SearchPlaceSectionType.TimeZoneDetails
+						) && (
+							<AccordionItem key={3}>
+								<AccordionButton
+									bg={
+										colorMode === "dark"
+											? "gray.700"
+											: "gray.100"
+									}
+								>
+									<Box
+										width={"100%"}
+										fontSize={"md"}
+										fontWeight={"medium"}
+										textAlign="left"
+									>
+										{`TimeZone Details - (${state?.timeZoneArray.length})`}
+									</Box>
+									<AccordionIcon />
+								</AccordionButton>
+								<AccordionPanel>
+									<Box>
+										{(state?.timeZoneArray ?? []).map(
+											(timezoneObj, index) => {
+												return (
+													<Box
+														paddingY={1}
+														key={`timezone-${index}`}
+													>
+														{(
+															state?.timeZoneArray ??
+															[]
+														).length > 1 && (
+															<Box
+																alignItems={
+																	"center"
+																}
+																justifyContent={
+																	"center"
+																}
+															>
+																<Text
+																	as="u"
+																	fontWeight={
+																		"medium"
+																	}
+																	align={
+																		"center"
+																	}
+																	fontSize={
+																		"md"
+																	}
+																>{`TimeZone ${
+																	index + 1
+																}`}</Text>
+																{currentTimeZoneIndex.current ===
+																	index && (
+																	<Tooltip
+																		hasArrow
+																		placement="top"
+																		label={
+																			"Current TimeZone By Place"
+																		}
+																	>
+																		<InfoIcon
+																			ms={
+																				2
+																			}
+																		/>
+																	</Tooltip>
+																)}
+															</Box>
+														)}
+														<Box mt={2}>
+															{Object.keys(
+																timezoneObj
+															).map(
+																(
+																	item,
+																	timeIndex
+																) => {
+																	return renderTimeZoneProperty(
+																		timezoneObj[
+																			item
+																		],
+																		timeIndex
+																	);
+																}
+															)}
+														</Box>
+														{index <
+															(
+																state?.timeZoneArray ??
+																[]
+															).length -
+																1 && (
+															<Divider
+																pt={0}
+																pb={2}
+															/>
+														)}
+													</Box>
+												);
+											}
+										)}
+									</Box>
+								</AccordionPanel>
+							</AccordionItem>
+						)}
 					</>
 				)}
 				{isSearchPlaceSectionWithinSettings(
