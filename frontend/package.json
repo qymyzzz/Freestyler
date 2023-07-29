@@ -26,6 +26,7 @@
 		"react-dom": "^18.2.0",
 		"react-i18next": "^13.0.2",
 		"react-icons": "^4.4.0",
+		"react-image-lightbox": "^5.1.4",
 		"react-live-clock": "^6.0.6",
 		"react-modal": "^3.16.1",
 		"react-moment": "^1.1.2",
