@@ -1698,12 +1698,26 @@ const MasterGlobeView = (props) => {
 	const handleRandomPlace = async (event) => {
 		let places = [];
 		let country = MasterWorldArray[Math.floor(Math.random() * MasterWorldArray.length)];
+		let country_copy = country;
+		country.type = 3
+		country.address = country.name
 		places.push(country)
 		let state = country.states[Math.floor(Math.random() * country.states.length)];
 		if(typeof(state) !== 'undefined'){
+			let state_copy = state
+			state.type = 2
+			state.countryItem = country_copy
+			state.countryName = country_copy.name
+			state.address = `${state.name}, ${state.countryName}`
 			places.push(state)
 			let city = state.cities[Math.floor(Math.random() * state.cities.length)];
 			if(typeof(city) !== 'undefined'){
+				city.type = 1
+				city.countryItem = country_copy
+				city.stateItem = state_copy
+				city.stateName = state_copy?.name
+				city.countryName = country_copy.name
+				city.address = `${city.name}, ${city.stateName}, ${city.countryName}`
 				places.push(city)
 			}
 		}
