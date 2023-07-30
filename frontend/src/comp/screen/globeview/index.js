@@ -261,9 +261,6 @@ const MasterGlobeView = (props) => {
 					.on("drag", dragged)
 					.on("end", dragended)
 			)
-			.on("touchstart", dragstarted)
-			.on("touchmove", dragged)
-			.on("touchend", dragended)
 			.on("click", mouseClicked)
 			.on("mousemove", mousemove)
 			.call(

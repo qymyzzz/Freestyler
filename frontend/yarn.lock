@@ -4660,10 +4660,10 @@ d3-zoom@3:
     d3-selection "2 - 3"
     d3-transition "2 - 3"
 
-d3@^7.6.1:
-  version "7.6.1"
-  resolved "https://registry.npmjs.org/d3/-/d3-7.6.1.tgz"
-  integrity sha512-txMTdIHFbcpLx+8a0IFhZsbp+PfBBPt8yfbmukZTQFroKuFqIwqswF0qE5JXWefylaAVpSXFoKm3yP+jpNLFLw==
+d3@^7.8.5:
+  version "7.8.5"
+  resolved "https://registry.npmjs.org/d3/-/d3-7.8.5.tgz"
+  integrity sha512-JgoahDG51ncUfJu6wX/1vWQEqOflgXyl4MaHqlcSruTez7yhaRKR9i8VjjcQGeS2en/jnFivXuaIMnseMMt0XA==
   dependencies:
     d3-array "3"
     d3-axis "3"
