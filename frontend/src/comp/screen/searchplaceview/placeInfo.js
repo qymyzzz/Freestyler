@@ -1361,13 +1361,58 @@ const PlaceInfoView = (props) => {
 		var linkRegex = /(\[.*?]\()(https?:\/\/[^\s)]+)\)/g;
 	  
 		// Replace image links
-		text = text.replace(imageRegex, '<figure><a href="$2" target="_blank"><img src="$2" alt="Image" /></a></figure>');
+		text = text.replace(imageRegex, function (match, p1, p2) {
+			const figure = document.createElement("figure");
+			const button = document.createElement("button");
+			const img = document.createElement("img");
+		  
+			// Set attributes and properties
+			button.setAttribute("data-url", p2);
+		  
+			img.src = p2;
+			img.alt = "Image";
+		  
+			// Append elements to each other
+			button.appendChild(img);
+			figure.appendChild(button);
+			return figure.outerHTML;
+		  });
 	  
 		// Replace [Image] links
-		text = text.replace(imageLinkRegex, '<figure><a href="$2" target="_blank"><img src="$2" alt="Image" /></a></figure>');
+		text = text.replace(imageLinkRegex, function (match, p1, p2) {
+			const figure = document.createElement("figure");
+			const button = document.createElement("button");
+			const img = document.createElement("img");
+		  
+			// Set attributes and properties
+			button.setAttribute("data-url", p2);
+		  
+			img.src = p2;
+			img.alt = "Image";
+		  
+			// Append elements to each other
+			button.appendChild(img);
+			figure.appendChild(button);
+			return figure.outerHTML;
+		  });
 	  
 		// Replace [Thumbnail image] links
-		text = text.replace(thumbnailImageLinkRegex, '<figure><a href="$2" target="_blank"><img src="$2" alt="Image" /></a></figure>');
+		text = text.replace(thumbnailImageLinkRegex, function (match, p1, p2) {
+			const figure = document.createElement("figure");
+			const button = document.createElement("button");
+			const img = document.createElement("img");
+		  
+			// Set attributes and properties
+			button.setAttribute("data-url", p2);
+			
+			img.src = p2;
+			img.alt = "Image";
+		  
+			// Append elements to each other
+			button.appendChild(img);
+			figure.appendChild(button);
+			return figure.outerHTML;
+		  });
 
 		// Replace regular links
 		text = text.replace(linkRegex, function(match, p1, p2) {
@@ -1377,15 +1422,27 @@ const PlaceInfoView = (props) => {
 	  
 		return text;
 	  }
+
+	  const [selectedImage, setSelectedImage] = useState(null);
 	  
-	  
+	  const handleImageClick = (event) => {
+		const target = event.target;
+		if (target.tagName === "IMG") {
+		  const imageUrl = target.getAttribute("src");
+		  setSelectedImage(imageUrl);
+		}
+	  };
+
+	  const handleCloseModal = () => {
+		setSelectedImage(null);
+	  };
 	  
 	  const formatMessageText = (text) => {
 		if (text) {
 		  const formattedText = urlify(text);
 	  
 		  const listItems = formattedText.split("\n").map((item, index) => (
-			<li key={index} dangerouslySetInnerHTML={{ __html: item }} />
+			<li key={index} dangerouslySetInnerHTML={{ __html: item }} onClick={handleImageClick}/>
 		  ));
 	  
 		  return <ol>{listItems}</ol>;
@@ -1483,6 +1540,16 @@ const PlaceInfoView = (props) => {
 											/>
 											<button type="submit" disabled={isGeneratingResponse} className={isGeneratingResponse ? 'disabled-button' : ''}>{t('Send')}</button>
 										</form>
+										{selectedImage && (
+											<div className="modal" onClick={handleCloseModal}>
+												<div className="modal-content">
+													<span className="close" onClick={handleCloseModal}>
+													&times;
+													</span>
+													<img src={selectedImage} alt="Image" />
+												</div>
+											</div>
+										)}
 									</div>
 								</AccordionPanel>
 							</AccordionItem>
