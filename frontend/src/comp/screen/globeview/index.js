@@ -261,6 +261,9 @@ const MasterGlobeView = (props) => {
 					.on("drag", dragged)
 					.on("end", dragended)
 			)
+			.on("touchstart", dragstarted)
+			.on("touchmove", dragged)
+			.on("touchend", dragended)
 			.on("click", mouseClicked)
 			.on("mousemove", mousemove)
 			.call(
@@ -1672,7 +1675,7 @@ const MasterGlobeView = (props) => {
 	const handleZoomIn = () => {
 		let { scaleFactor } = globeDataObj.current;
 
-		scaleFactor = Math.min(scaleFactor + 0.3, 8.0);
+		scaleFactor = Math.min(scaleFactor + 0.6, 8.0);
 
 		updateGlobeData({
 			transform: event.transform,
@@ -1685,7 +1688,7 @@ const MasterGlobeView = (props) => {
 	const handleZoomOut = () => {
 		let { scaleFactor } = globeDataObj.current;
 
-		scaleFactor = Math.max(scaleFactor - 0.3, 0.9);
+		scaleFactor = Math.max(scaleFactor - 0.6, 0.9);
 
 		updateGlobeData({
 			transform: event.transform,
