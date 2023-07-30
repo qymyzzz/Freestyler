@@ -220,7 +220,7 @@ const PlaceInfoView = (props) => {
 					defaultIndex: [0],
 				});
 			}
-
+			// getPlaceDetails();
 			resolve();
 		});
 	};
@@ -231,11 +231,9 @@ const PlaceInfoView = (props) => {
 			let favPlaceDisplayArray = [];
 
 			favPlaceArray.forEach((placeObj, index) => {
-				let currentPlaceItem = getPlaceDetailsFromPlaceItem(placeObj);
-				currentPlaceItem = Object.assign({}, currentPlaceItem);
 				favPlaceDisplayArray.push(placeObj);
 			});
-
+	
 			updateState({
 				favPlaceArray: favPlaceArray,
 				favPlaceDisplayArray: favPlaceDisplayArray,
@@ -294,6 +292,52 @@ const PlaceInfoView = (props) => {
 		};
 
 		switch (placeType) {
+			case 4: {
+				if(currentPlaceItem?.countryItem !== undefined){
+					setCountryDetails(currentPlaceItem?.countryItem);
+				}
+				else{
+					updateState({
+						countryDetailsObj: null,
+					});
+				}
+				
+				placeDetailsObj = {
+					name: {
+						type: "name",
+						title: "Name",
+						value: currentPlaceItem?.name,
+					},
+					placeType: {
+						type: "placeType",
+						title: "Place Type",
+						value: "Natural",
+					},
+					address: {
+						type: "address",
+						title: "Address",
+						value: currentPlaceItem?.address,
+					},
+					latitude: {
+						type: "latitude",
+						title: "Place Latitude",
+						value: currentPlaceItem?.latitude,
+					},
+					longitude: {
+						type: "longitude",
+						title: "Place Longitude",
+						value: currentPlaceItem?.longitude,
+					},
+					countryName: {
+						type: "countryName",
+						title: "Country",
+						value: currentPlaceItem?.countryItem?.name,
+					},
+				};
+
+				break;
+			}
+
 			case PlaceType.Country: {
 				setCountryDetails(currentPlaceItem);
 
@@ -455,7 +499,6 @@ const PlaceInfoView = (props) => {
 				value: timezoneByPlace,
 			},
 		};
-
 		updateState({
 			placeDetailsObj: placeDetailsObj,
 		});
@@ -483,8 +526,53 @@ const PlaceInfoView = (props) => {
 			...currentPlaceItem,
 			...outputCoordinate,
 		};
-
 		switch (placeType) {
+			case 4: {
+				if(currentPlaceItem?.countryItem !== undefined){
+					setCountryDetails(currentPlaceItem?.countryItem);
+				}
+				else{
+					updateState({
+						countryDetailsObj: null,
+					});
+				}
+				
+				placeDetailsObj = {
+					name: {
+						type: "name",
+						title: "Name",
+						value: currentPlaceItem?.name,
+					},
+					placeType: {
+						type: "placeType",
+						title: "Place Type",
+						value: "Natural",
+					},
+					address: {
+						type: "address",
+						title: "Address",
+						value: currentPlaceItem?.address,
+					},
+					latitude: {
+						type: "latitude",
+						title: "Place Latitude",
+						value: currentPlaceItem?.latitude,
+					},
+					longitude: {
+						type: "longitude",
+						title: "Place Longitude",
+						value: currentPlaceItem?.longitude,
+					},
+					countryName: {
+						type: "countryName",
+						title: "Country",
+						value: currentPlaceItem?.countryItem,
+					},
+				};
+
+				break;
+			}
+			
 			case PlaceType.Country: {
 				placeDetailsObj = {
 					name: {
@@ -624,7 +712,7 @@ const PlaceInfoView = (props) => {
 			latitude: countryItem?.latitude,
 			longitude: countryItem?.longitude,
 		};
-
+	
 		let outputCoordinate = getLatLongInFormat(inputCoordinate);
 
 		countryItem = {
@@ -771,7 +859,7 @@ const PlaceInfoView = (props) => {
 		let phoneNumArray = PhoneNumArray.slice();
 		let countryCode = countryItem?.iso2;
 		let phoneNumRegex = null;
-
+		
 		let filteredPhoneNumArray = phoneNumArray.filter((item) => {
 			return item[1].toLowerCase() === countryCode.toLowerCase();
 		});
@@ -1466,7 +1554,7 @@ const PlaceInfoView = (props) => {
 		const [showAccordion, setShowAccordion] = useState(false);
 
 		useEffect(() => {
-			if (placeItem && ("countryName" in placeItem || "capital" in placeItem)) {
+			if (placeItem) {
 				setShowAccordion(true);
 			  } else {
 				setShowAccordion(false);
@@ -1587,7 +1675,7 @@ const PlaceInfoView = (props) => {
 								</AccordionItem>
 						)}
 
-						{showAccordion && isSearchPlaceSectionWithinSettings(
+						{state?.countryDetailsObj !== null && showAccordion && isSearchPlaceSectionWithinSettings(
 							SearchPlaceSectionType.CountryDetails
 						) && (
 							<AccordionItem key={2}>

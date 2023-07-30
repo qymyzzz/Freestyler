@@ -480,7 +480,7 @@ const SearchPlaceView = (props) => {
 			];
 
 			// Process the response data
-			let natureWords = ["river", "mountain", "nature", "natural", "ocean", "sea", "lake", "water", "volcano", "wood"];
+			let natureWords = ["river", "mountain", "nature", "natural", "ocean", "sea", "lake", "forest", "volcano", "wood", "water"];
 
 			if (data.length > 0) {
 				for(let j = 0; j < data.length; j++) {
@@ -488,15 +488,39 @@ const SearchPlaceView = (props) => {
 					for(let i = 0; i < natureWords.length; i++){
 						if(place.type.includes(natureWords[i]) || place.class.includes[natureWords[i]]){
 							const wordsArray = tr(place.display_name.toString()).split(',');
-							const name = wordsArray[0].trim();
+							const name = wordsArray[0].trim(), countryName = wordsArray[wordsArray.length - 1].trim();
+							let countries = []
+							countries = MasterWorldArray.map((item) => {
+								return lodash.omit(item, ["states"]);
+							});
+				
+							countries = countries.filter((item) => {
+								return item.name
+									.toLowerCase()
+									.includes(countryName.toLowerCase());
+							});
+				
+							countries = closetSort(countries, countryName);
+				
+							countries = countries.map((item) => {
+								return {
+									...item,
+									type: PlaceType.Country,
+									address: `${item.name}`,
+								};
+							});
+							let countryItem = countries[0];
+							let address = tr(place.display_name.toString()).replace(/\d+,?/g, '');
 							let item = {
-								address: tr(place.display_name.toString()),
+								address: address,
 								name: name,
-								type: place.type.toString(),
+								type: 4,
 								class: place.class.toString(),
 								latitude: place.lat.toString(),
 								longitude: place.lon.toString(),
+								countryItem: countryItem,
 							};
+							
 							searchResultArray.push(item);
 						}
 					}
