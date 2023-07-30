@@ -487,10 +487,11 @@ const SearchPlaceView = (props) => {
 					let place = data[j];
 					for(let i = 0; i < natureWords.length; i++){
 						if(place.type.includes(natureWords[i]) || place.class.includes[natureWords[i]]){
-							
+							const wordsArray = tr(place.display_name.toString()).split(',');
+							const name = wordsArray[0].trim();
 							let item = {
 								address: tr(place.display_name.toString()),
-								name: tr(place.display_name.toString()),
+								name: name,
 								type: place.type.toString(),
 								class: place.class.toString(),
 								latitude: place.lat.toString(),

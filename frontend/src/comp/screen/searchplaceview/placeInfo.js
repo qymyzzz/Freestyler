@@ -1517,7 +1517,7 @@ const PlaceInfoView = (props) => {
 														className={`message AI ai-typing ${isTypingAnimationEnded ? 'animation-ended' : ''}`}
 														onAnimationEnd={() => setIsTypingAnimationEnded(true)}
 													>
-														Exploring the depths of knowledge
+														Guide is typing
 														<span className="dots">
 															<span className="dot"></span>
 															<span className="dot"></span>
