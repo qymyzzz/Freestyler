@@ -12,9 +12,6 @@ import { connect } from "react-redux";
 
 import lodash from "lodash";
 
-const TRACKING_ID = process.env.TRACKING_ID
-ReactGA.initialize(TRACKING_ID)
-
 const App = (props) => {
 	/*  Life-cycles Methods */
 
@@ -32,7 +29,7 @@ const App = (props) => {
 
 	useEffect(() => {
 		ReactGA.pageview(window.location.pathname + window.location.search);
-	});
+	}, []);
 
 	/*  Public Interface Methods */
 

@@ -2,6 +2,7 @@ import { ChakraProvider } from "@chakra-ui/react";
 import i18n from 'i18next';
 import React from "react";
 import ReactDOM from "react-dom/client";
+import ReactGA from 'react-ga';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
@@ -9,7 +10,11 @@ import App from "./App";
 import { persistor, store } from "./comp/redux/store";
 import "./index.css";
 
+
 import theme from "./theme";
+
+const TRACKING_ID = process.env.TRACKING_ID
+ReactGA.initialize(TRACKING_ID)
 
 i18n
   .use(initReactI18next)
