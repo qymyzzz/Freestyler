@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 
 import { CircularProgress, Flex, Text, useColorMode } from "@chakra-ui/react";
 
-import { Analytics } from '@vercel/analytics/react';
 import Actions from "./comp/redux/action";
 import MasterContainer from "./comp/screen/mastercontainer";
 
@@ -96,7 +95,6 @@ const App = (props) => {
 		<>
 			<MasterContainer />
 			{isMasterAppLoading && !lodash.isNil(colorMode) && renderLoader()}
-			<Analytics />
 		</>
 	);
 };
