@@ -4,12 +4,16 @@ import React, { useEffect, useState } from "react";
 
 import { CircularProgress, Flex, Text, useColorMode } from "@chakra-ui/react";
 
+import ReactGA from "react-ga";
 import Actions from "./comp/redux/action";
 import MasterContainer from "./comp/screen/mastercontainer";
 
 import { connect } from "react-redux";
 
 import lodash from "lodash";
+
+const TRACKING_ID = process.env.TRACKING_ID
+ReactGA.initialize(TRACKING_ID)
 
 const App = (props) => {
 	/*  Life-cycles Methods */
@@ -25,6 +29,10 @@ const App = (props) => {
 	useEffect(() => {
 		props.setIsMasterAppLoading(true);
 	}, []);
+
+	useEffect(() => {
+		ReactGA.pageview(window.location.pathname + window.location.search);
+	});
 
 	/*  Public Interface Methods */
 
