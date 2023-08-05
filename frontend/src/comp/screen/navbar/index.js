@@ -1,10 +1,8 @@
-import React, { createRef, useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
 	Flex,
-	Heading,
-	useColorMode,
-	useDisclosure
+	Heading
 } from "@chakra-ui/react";
 
 import i18n from 'i18next';
@@ -29,13 +27,6 @@ const NavBarView = (props) => {
 	const updateState = (data) =>
 		setState((preState) => ({ ...preState, ...data }));
 
-	const { isOpen, onClose } = useDisclosure();
-	const { colorMode, toggleColorMode } = useColorMode();
-
-	const btnRef = useRef();
-	const settingsRef = createRef();
-	const aboutAppRef = createRef();
-
 	/*  Life-cycles Methods */
 
 	useEffect(() => {
@@ -52,14 +43,6 @@ const NavBarView = (props) => {
 	/*  Public Interface Methods */
 
 	/*  UI Events Methods   */
-
-	const onPressAboutApp = () => {
-		aboutAppRef.current && aboutAppRef.current.openModal();
-	};
-
-	const onPressSettings = () => {
-		settingsRef.current && settingsRef.current.openModal();
-	};
 
 	const handleRussian = () => {
 		i18n.changeLanguage('ru');
