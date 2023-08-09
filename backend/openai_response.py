@@ -12,6 +12,7 @@ from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.chat_models import ChatOpenAI
 from langchain.schema import LLMResult
+from langchain.utilities import WikipediaAPIWrapper
 from pydantic import BaseModel
 
 # datetime object containing current date and time
@@ -35,11 +36,13 @@ news = GoogleSerperAPIWrapper(type="news")
 
 places = GoogleSerperAPIWrapper(type="places")
 
+wikipedia = WikipediaAPIWrapper()
+
 tools = [
     Tool(
         name="Search",
         func=search.run,
-        description="useful for when you need to answer with search",
+        description="useful for when you need to answer with search or you are asked for weather",
     ),
     Tool(
         name="Images",
@@ -55,6 +58,11 @@ tools = [
         name="places",
         func=places.results,
         description="useful for when you need to answer places and do not return pictures",
+    ),
+    Tool(
+        name="wikipedia",
+        func=wikipedia.run,
+        description="useful for when you need to get information in wikipedia"
     ),
 ]
 
