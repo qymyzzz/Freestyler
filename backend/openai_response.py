@@ -2,6 +2,7 @@ import os
 from datetime import datetime
 
 import openai
+import wikipedia
 from dotenv import load_dotenv
 from fastapi import Request
 from fastapi.responses import StreamingResponse
