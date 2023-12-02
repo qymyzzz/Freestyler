@@ -891,7 +891,7 @@ const MasterGlobeView = (props) => {
 					path,
 				},
 				water,
-				"#74ccf466"
+				"#00000066"
 			);
 
 			renderDayNightPath();
@@ -1040,7 +1040,7 @@ const MasterGlobeView = (props) => {
 				path,
 			},
 			geoPath,
-			"#00000066"
+			"#74ccf466"
 		);
 
 		stroke(
